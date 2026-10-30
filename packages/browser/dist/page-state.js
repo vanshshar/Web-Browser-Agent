@@ -1,0 +1,89 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.extractPageState = extractPageState;
+const shared_1 = require("@browser-agent/shared");
+async function extractPageState(page, maxLength = shared_1.DEFAULTS.MAX_PAGE_CONTENT_LENGTH) {
+    const url = page.url();
+    const title = await page.title().catch(() => '');
+    const { content, interactiveElements } = await page.evaluate((maxTextLen) => {
+        // 1. Extract visible text while stripping script, style, noscript, etc.
+        const clone = document.body ? document.body.cloneNode(true) : null;
+        let fullText = '';
+        if (clone) {
+            const nonContent = clone.querySelectorAll('script, style, noscript, svg, iframe');
+            nonContent.forEach((node) => node.remove());
+            fullText = (clone.innerText || clone.textContent || '').replace(/\s+/g, ' ').trim();
+        }
+        const truncatedContent = fullText.length > maxTextLen
+            ? fullText.slice(0, maxTextLen) + '... [truncated]'
+            : fullText;
+        // 2. Discover interactive elements
+        const elements = [];
+        const nodes = document.querySelectorAll('button, a[href], input, textarea, select, [role="button"], [role="link"], [role="textbox"]');
+        let count = 0;
+        for (const el of Array.from(nodes)) {
+            if (count >= 50)
+                break; // Limit elements count to keep context bounded
+            // Basic visibility check
+            const style = window.getComputedStyle(el);
+            if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+                continue;
+            }
+            const tag = el.tagName.toLowerCase();
+            const type = el.type || undefined;
+            const name = el.name || undefined;
+            const role = el.getAttribute('role') || undefined;
+            const text = (el.innerText || el.textContent || '').trim().slice(0, 80) || undefined;
+            const placeholder = el.placeholder || undefined;
+            const ariaLabel = el.getAttribute('aria-label') || undefined;
+            const value = el.value ? String(el.value).slice(0, 80) : undefined;
+            // Build a stable CSS selector
+            let selector = '';
+            if (el.id) {
+                selector = `#${CSS.escape(el.id)}`;
+            }
+            else if (name && tag !== 'a') {
+                selector = `${tag}[name="${CSS.escape(name)}"]`;
+            }
+            else if (placeholder) {
+                selector = `${tag}[placeholder="${CSS.escape(placeholder)}"]`;
+            }
+            else if (ariaLabel) {
+                selector = `[aria-label="${CSS.escape(ariaLabel)}"]`;
+            }
+            else if (tag === 'a' && el.getAttribute('href')) {
+                const href = el.getAttribute('href');
+                selector = `a[href="${CSS.escape(href)}"]`;
+            }
+            else if (text && text.length < 30) {
+                selector = `${tag}:has-text("${text}")`;
+            }
+            else {
+                selector = tag;
+            }
+            elements.push({
+                tag,
+                type,
+                name,
+                role,
+                text,
+                placeholder,
+                ariaLabel,
+                selector,
+                value,
+            });
+            count++;
+        }
+        return { content: truncatedContent, interactiveElements: elements };
+    }, maxLength).catch(() => ({
+        content: '[Failed to extract DOM state from page]',
+        interactiveElements: [],
+    }));
+    return {
+        url,
+        title,
+        content,
+        interactiveElements,
+    };
+}
+//# sourceMappingURL=page-state.js.map
