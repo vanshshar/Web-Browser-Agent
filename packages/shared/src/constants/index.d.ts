@@ -1,0 +1,35 @@
+export declare const TASK_STATUSES: readonly ["queued", "running", "completed", "failed", "cancelled", "timed_out"];
+export declare const ERROR_CODES: {
+    readonly VALIDATION_ERROR: "VALIDATION_ERROR";
+    readonly INVALID_URL: "INVALID_URL";
+    readonly URL_BLOCKED: "URL_BLOCKED";
+    readonly MODEL_CONFIGURATION_ERROR: "MODEL_CONFIGURATION_ERROR";
+    readonly MODEL_REQUEST_FAILED: "MODEL_REQUEST_FAILED";
+    readonly MODEL_TIMEOUT: "MODEL_TIMEOUT";
+    readonly UNSUPPORTED_TOOL: "UNSUPPORTED_TOOL";
+    readonly INVALID_TOOL_ARGUMENTS: "INVALID_TOOL_ARGUMENTS";
+    readonly BROWSER_LAUNCH_FAILED: "BROWSER_LAUNCH_FAILED";
+    readonly NAVIGATION_FAILED: "NAVIGATION_FAILED";
+    readonly BROWSER_ACTION_FAILED: "BROWSER_ACTION_FAILED";
+    readonly TASK_NOT_FOUND: "TASK_NOT_FOUND";
+    readonly TASK_TIMEOUT: "TASK_TIMEOUT";
+    readonly TASK_CANCELLED: "TASK_CANCELLED";
+    readonly CONCURRENCY_LIMIT_REACHED: "CONCURRENCY_LIMIT_REACHED";
+    readonly INTERNAL_ERROR: "INTERNAL_ERROR";
+};
+export declare const DEFAULTS: {
+    readonly API_PORT: 4000;
+    readonly WEB_ORIGIN: "http://localhost:3000";
+    readonly BROWSER_HEADLESS: true;
+    readonly TASK_TIMEOUT_MS: 120000;
+    readonly MAX_AGENT_ITERATIONS: 25;
+    readonly BROWSER_ACTION_TIMEOUT_MS: 30000;
+    readonly MODEL_REQUEST_TIMEOUT_MS: 60000;
+    readonly MAX_CONCURRENT_TASKS: 3;
+    readonly MAX_TASK_LENGTH: 5000;
+    readonly MAX_RETRIES: 2;
+    readonly GROQ_MODEL: "llama-3.3-70b-versatile";
+    readonly MAX_PAGE_CONTENT_LENGTH: 8000;
+    readonly POLL_INTERVAL_MS: 2000;
+};
+//# sourceMappingURL=index.d.ts.map
