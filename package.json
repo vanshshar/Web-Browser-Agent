@@ -1,0 +1,33 @@
+{
+  "name": "browser-automation-agent",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:api dev:web",
+    "dev:web": "npm -w @browser-agent/web run dev",
+    "dev:api": "npm -w @browser-agent/api run dev",
+    "build": "npm run build:packages && npm run build:api && npm run build:web",
+    "build:packages": "npm -w @browser-agent/shared run build && npm -w @browser-agent/browser run build && npm -w @browser-agent/agent run build",
+    "build:web": "npm -w @browser-agent/web run build",
+    "build:api": "npm -w @browser-agent/api run build",
+    "test": "npm -w @browser-agent/shared -w @browser-agent/browser -w @browser-agent/agent -w @browser-agent/api run test",
+    "test:browser": "npm -w @browser-agent/browser run test",
+    "test:agent": "npm -w @browser-agent/agent run test",
+    "test:api": "npm -w @browser-agent/api run test",
+    "typecheck": "npm run build:packages && npm run build:api && npm -w @browser-agent/web exec tsc -- --noEmit",
+    "lint": "echo 'lint placeholder'",
+    "clean": "rimraf packages/*/dist apps/*/dist apps/web/.next"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
